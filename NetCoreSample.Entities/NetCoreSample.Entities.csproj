@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\NetCoreSample.Entities.Generated\Category.cs" Link="Category.cs" />
+    <Compile Include="..\NetCoreSample.Entities.Generated\Customer.cs" Link="Customer.cs" />
+    <Compile Include="..\NetCoreSample.Entities.Generated\CustomerSetting.cs" Link="CustomerSetting.cs" />
+    <Compile Include="..\NetCoreSample.Entities.Generated\Employee.cs" Link="Employee.cs" />
+    <Compile Include="..\NetCoreSample.Entities.Generated\Order.cs" Link="Order.cs" />
+    <Compile Include="..\NetCoreSample.Entities.Generated\OrderDetail.cs" Link="OrderDetail.cs" />
+    <Compile Include="..\NetCoreSample.Entities.Generated\Product.cs" Link="Product.cs" />
+    <Compile Include="..\NetCoreSample.Entities.Generated\Territory.cs" Link="Territory.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="TrackableEntities.Common.Core" Version="1.0.0-alpha" />
   </ItemGroup>
 

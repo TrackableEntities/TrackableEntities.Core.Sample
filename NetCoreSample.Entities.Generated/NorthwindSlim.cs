@@ -1,4 +1,4 @@
-namespace NetCoreSample.Entities.Generated
+namespace NetCoreSample.Entities
 {
     using System;
     using System.Data.Entity;

@@ -1,11 +1,10 @@
-namespace NetCoreSample.Entities.Generated
+namespace NetCoreSample.Entities
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.Entity.Spatial;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-	using TrackableEntities;
+	using TrackableEntities.Common.Core;
 
     [Table("Product")]
     public partial class Product : ITrackable, IMergeable
