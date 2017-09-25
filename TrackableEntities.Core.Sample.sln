@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCoreSample.Entities.Gene
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCoreSample.Entities", "NetCoreSample.Entities\NetCoreSample.Entities.csproj", "{CAC9FF48-66E3-4852-B375-DFF53D6E37F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCoreSample.Web", "NetCoreSample.Web\NetCoreSample.Web.csproj", "{A20B597D-4D2D-476D-9BCD-82A5D6F19D8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{CAC9FF48-66E3-4852-B375-DFF53D6E37F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAC9FF48-66E3-4852-B375-DFF53D6E37F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAC9FF48-66E3-4852-B375-DFF53D6E37F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A20B597D-4D2D-476D-9BCD-82A5D6F19D8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A20B597D-4D2D-476D-9BCD-82A5D6F19D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A20B597D-4D2D-476D-9BCD-82A5D6F19D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A20B597D-4D2D-476D-9BCD-82A5D6F19D8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
