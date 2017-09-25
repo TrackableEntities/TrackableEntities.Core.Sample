@@ -10,21 +10,31 @@ Sample solution using Trackable Entities with .NET Core.
 ## Generated Trackable Entities
 
 - Add a .NET 4.6.1 Class Library project called _NetCoreSample.Entities.Generated_.
+    + Open project prpoperties and remove ".Generated" from the default namespace.
 - Add a **Data Connection** in Visual Studio pointing to the NorthwindSlim database on (localdb)\MsSqlLocalDb.
 - Install NuGet packages:
     + EntityFramework
-    + Install TrackableEntities.EF.6
+    + Install TrackableEntities.Common.Core -Pre
     + TrackableEntities.CodeTemplates.Service.Net45
+    > Note: Ignore the compiling transformation error.
+- Edit EntityType.cs.t4 file in the CodeTemplates/EFModelFromDatabase folder.
+    + First go to Tools, Extensions and Updates, and install the Tangible T4 Editor.
+    + Remove the following namespace import: `using System.Data.Entity.Spatial`
+    + Update the `TrackableEntities` namespace import to: `using TrackableEntities.Common.Core`
 - Add a new Item, select Data, then **ADO.NET Entity Data Model**, and name it NorthwindSlim.
     + Choose Code First from Database, then select the NorthwindSlim data connection you created earlier.
     + Select all the tables and click Finish.
+    + Build the project.
 
 ## Trackable Entities NetStandard Library
 - Add a NetStandard class library called _NetCoreSample.Entities_
     + Install NuGet package: TrackableEntities.Common.Core -Pre
 - Add a reference to **System.ComponentModel.DataAnnotations**.
-- **Add entities** (do not link) from the NetCoreSample.Entities.Generated project.
-- Edit each class add a using for **TrackableEntities.Common.Core**.
+- **Link** generated entities from the NetCoreSample.Entities.Generated project.
+    + Right-click _NetCoreSample.Entities_ project, select Add New Item
+    + Nviate to the Generated entities project and select all .cs files except NorthwindSlim.cs.
+    + From the Add button dropdown select **Add As Link**.
+    + Build the project.
 
 ## Data Migrations
 
@@ -103,4 +113,116 @@ Sample solution using Trackable Entities with .NET Core.
     services.AddDbContext<NorthwindSlimContext>(options => options.UseSqlServer(connectionString));
     ```
 
-- Next
+## Web API Controllers
+
+- Update `Startup.ConfigureServices` to handle cyclical references when serializing JSON.
+
+    ```csharp
+    services.AddMvc()
+        .AddJsonOptions(options =>
+            options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All);
+    ```
+
+- Use the DotNet CLI to scaffold a Customer controller
+    + Install NuGet package: Microsoft.VisualStudio.Web.CodeGeneration.Design
+    + Open a command prompt at the Web project location and run the following:
+
+    ```
+    dotnet aspnet-codegenerator --project . controller -name CustomerController -api -outDir Controllers -m Customer -dc NorthwindSlimContext
+    ```
+
+    + Remove actions in CustomerController except `GetCustomers` and `GetCustomer`.
+    + Refactor `GetCustomers` as an async action.
+
+    ```csharp
+    [HttpGet]
+    public async Task<IActionResult> GetCustomers()
+    {
+        var customers = await _context.Customers
+            .ToListAsync();
+        return Ok(customers);
+    }
+    ```
+
+    + Run the Web project by pressing Ctrl+F5 and navigate to api/customer and api/customer/ALFKI.
+
+- Add an Order controller.
+
+    ```
+    dotnet aspnet-codegenerator --project . controller -name OrderController -api -outDir Controllers -m Order -dc NorthwindSlimContext
+    ```
+
+    + Refactor `GetOrders` as an async action with includes.
+
+    ```csharp
+    [HttpGet]
+    public async Task<IActionResult> GetOrders()
+    {
+        var orders = await _context.Orders
+            .Include(m => m.Customer)
+            .Include(m => m.OrderDetails)
+            .ThenInclude(m => m.Product)
+            .ToListAsync();
+        return Ok(orders);
+    }
+    ```
+
+    + Also add includes to `GetOrder`.
+
+    ```csharp
+    var order = await _context.Orders
+        .Include(m => m.Customer)
+        .Include(m => m.OrderDetails)
+        .ThenInclude(m => m.Product)
+        .SingleOrDefaultAsync(m => m.OrderId == id);
+    ```
+
+    + Navigate to api/order and api/order/1.
+
+    + Add a `GetOrders` overload that filters by `customerId`.
+
+    ```csharp
+    // GET: api/Order/ALFKI
+    [HttpGet("{customerId:alpha}")]
+    public async Task<IActionResult> GetOrders([FromRoute] string customerId)
+    {
+        var orders = await _context.Orders
+            .Include(m => m.Customer)
+            .Include(m => m.OrderDetails)
+            .ThenInclude(m => m.Product)
+            .Where(m => m.CustomerId == customerId)
+            .ToListAsync();
+        return Ok(orders);
+    }
+    ```
+
+    + Navigate to api/order/ALFKI.
+
+- Refactor Put, Post and Delete actions to call `_context.ApplyChanges`.
+
+    + Refactor `PutOrder` to replace setting state to Modified with applying changes nad return the order with an OK response.
+
+    ```csharp
+    //_context.Entry(order).State = EntityState.Modified;
+    _context.ApplyChanges(order);
+
+    //return NoContent();
+    return Ok(order);
+    ```
+
+    + Refactor `PostOrder` to set TrackingState to Added and apply changes.
+
+    ```csharp
+    //_context.Orders.Add(order);
+    order.TrackingState = TrackingState.Added;
+    _context.ApplyChanges(order);
+    ```
+
+    + Refactor `DeleteOrder` to set TrackingState to Deleted and apply changes.
+
+    ```csharp
+    //_context.Orders.Remove(order);
+    order.TrackingState = TrackingState.Deleted;
+    _context.ApplyChanges(order);
+    ```
+

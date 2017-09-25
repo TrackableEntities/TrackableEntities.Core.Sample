@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace NetCoreSample.Web
 {
@@ -18,7 +19,9 @@ namespace NetCoreSample.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                    options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All);
             var connectionString = Configuration.GetConnectionString("NetCoreSample");
             services.AddDbContext<NorthwindSlimContext>(options => options.UseSqlServer(connectionString));
         }
