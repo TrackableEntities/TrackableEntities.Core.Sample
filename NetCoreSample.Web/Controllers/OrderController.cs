@@ -67,18 +67,13 @@ namespace NetCoreSample.Web.Controllers
             return Ok(order);
         }
 
-        // PUT: api/Order/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder([FromRoute] int id, [FromBody] Order order)
+        // PUT: api/Order
+        [HttpPut]
+        public async Task<IActionResult> PutOrder([FromBody] Order order)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            if (id != order.OrderId)
-            {
-                return BadRequest();
             }
 
             //_context.Entry(order).State = EntityState.Modified;
@@ -90,12 +85,18 @@ namespace NetCoreSample.Web.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!OrderExists(id))
+                if (!_context.Orders.Any(o => o.OrderId == order.OrderId))
                 {
                     return NotFound();
                 }
                 throw;
             }
+
+            // Populate reference properties
+            _context.LoadRelatedEntities(order);
+
+            // Reset tracking state to unchanged
+            AcceptChanges(order);
 
             //return NoContent();
             return Ok(order);
@@ -115,6 +116,12 @@ namespace NetCoreSample.Web.Controllers
             _context.ApplyChanges(order);
 
             await _context.SaveChangesAsync();
+
+            // Populate reference properties
+            _context.LoadRelatedEntities(order);
+
+            // Reset tracking state to unchanged
+            AcceptChanges(order);
 
             return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
         }
@@ -140,12 +147,18 @@ namespace NetCoreSample.Web.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(order);
+            return Ok();
         }
 
-        private bool OrderExists(int id)
+        private static void AcceptChanges(Order order)
         {
-            return _context.Orders.Any(e => e.OrderId == id);
+            order.TrackingState = TrackingState.Unchanged;
+            order.Customer.TrackingState = TrackingState.Unchanged;
+            order.OrderDetails.ToList().ForEach(m =>
+            {
+                m.TrackingState = TrackingState.Unchanged;
+                m.Product.TrackingState = TrackingState.Unchanged;
+            });
         }
     }
 }
