@@ -1,13 +1,31 @@
-## Trackable Entities Core Sample
+# Trackable Entities for EF Core Sample
 
-Sample solution using Trackable Entities with .NET Core.
+Sample solution using Trackable Entities with ASP.NET Core and Entity Framework Core.
+
+## Steps
+
+> **Note**: Perform the following steps to create an end-to-end solution using [Trackable Entities](http://trackableentities.github.io/) with a REST-ful [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/) web api service and a client .NET console application.  To see the final outcome of this process, please refer to the code in this repository.
+
+1. Create the NorthwindSlim sample database.
+2. Generate _server-side_ trackable entities.
+3. Link to generated entities from a NetStandard project.
+4. Add an ASP.NET Core web api project and use EF Core Migrations to create a _new database_ from the generated entities.
+5. Install the **TrackableEntities.EF.Core** NuGet package and add web api controllers with GET, POST, PUT and DELETE actions.
+6. Generate _client-side_ trackable entities in a traditional class library project.
+7. Add a traditional .NET client console application that uses the **TrackableEntities.Client** NuGet package to perform client-side change tracking, sending object graphs of changed entities to the Web API service where they are saved to the database in a single transaction.
 
 ## NorthwindSlim Database
+
+_This sample shows how you can **both** generate entities from an existing database (database-first) and create a new database from existing entities (code-first). In real life you would do either one or the other._
 
 - This sample uses a skinny version of the Northwind sample database, called _NorthwindSlim_, which you can download from http://bit.ly/northwindslim.
 - Open SQL Server Management Studio, connect to (localdb)\MsSqlLocalDb and create a new database named _NorthwindSlim_. Then run the NorthwindSlim.sql file, which will create all the database tables and populate them with data.
 
-## Generated Trackable Entities
+## Server-Side Generated Trackable Entities
+
+_Entities are generated with a traditional .NET class library so that you can use the Visual Studio wizard for adding an ADO.NET Entity Data Model, which uses custom T4 templates to generate server-side trackable entities._
+
+> **Note**: If you haven't done so already, create a Visual Studio solution either prior to or while adding a class library project.
 
 - Add a .NET 4.6.1 Class Library project called _NetCoreSample.Entities.Generated_.
     + Open project prpoperties and remove ".Generated" from the default namespace.
@@ -16,7 +34,7 @@ Sample solution using Trackable Entities with .NET Core.
     + EntityFramework
     + Install TrackableEntities.Common.Core -Pre
     + TrackableEntities.CodeTemplates.Service.Net45
-    > Note: Ignore the compiling transformation error.
+    > **Note**: Ignore the compiling transformation error.
 - Edit EntityType.cs.t4 file in the CodeTemplates/EFModelFromDatabase folder.
     + First go to Tools, Extensions and Updates, and install the Tangible T4 Editor.
     + Remove the following namespace import: `using System.Data.Entity.Spatial`
@@ -36,7 +54,11 @@ Sample solution using Trackable Entities with .NET Core.
     + From the Add button dropdown select **Add As Link**.
     + Build the project.
 
-## Data Migrations
+## EF Core Migrations
+
+_In this section you will create a new database based on entities generated from the NorthwindSlim database._
+
+> **Note**: To perform an EF Core migration you need to first create either an ASP.NET Core app or a .NET Core console app.  It is not possible to use a class library for EF Core migrations.
 
 - Add a new **ASP.NET Core** web application
     + Select Web API template targeting .NET Core with ASP.NET Core 2.0.
@@ -115,6 +137,8 @@ Sample solution using Trackable Entities with .NET Core.
 
 ## Web API Controllers
 
+_This sample uses the .NET Core CLI for scaffolding Web API contollers with GET, POST, PUT and DELETE actions that use Entity Framework Core for persisting changes to the database in a disconnected manner._
+
 - Update `Startup.ConfigureServices` to handle cyclical references when serializing JSON.
 
     ```csharp
@@ -123,7 +147,7 @@ Sample solution using Trackable Entities with .NET Core.
             options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All);
     ```
 
-- Use the DotNet CLI to scaffold a Customer controller
+- Use the DotNet CLI to scaffold a Customer controller.
     + Install NuGet package: Microsoft.VisualStudio.Web.CodeGeneration.Design
     + Open a command prompt at the Web project location and run the following:
 
@@ -264,7 +288,9 @@ Sample solution using Trackable Entities with .NET Core.
     return Ok();
     ```
 
-## Console Client
+## Client-Side Generated Trackable Entities
+
+_Client-side entities are generated using the Visual Studio wizard for adding an ADO.NET Entity Data Model, even though the client does not require any reference to Entity Framework._
 
 - Add a .NET 4.6.1 class library project called _NetCoreSample.Entities.Client_.
 - Install NuGet packages:
@@ -273,6 +299,11 @@ Sample solution using Trackable Entities with .NET Core.
     + TrackableEntities.CodeTemplates.Client.Net45
 - Add new item, Data, ADO.NET Entity Data Model.
     + Select the NorthwindSlim data connection
+
+## Client Console Application
+
+_The client console app uses traditional Trackable Entities NuGet packages, which perform client-side change tracking for marking entities as Added, Modified or Deleted._
+
 - Add a .NET 4.6.1 console app called _NetCoreSample.ConsoleClient_.
 - Install NuGet packages:
     + TrackableEntities.Client
@@ -281,4 +312,10 @@ Sample solution using Trackable Entities with .NET Core.
 - Reference the Entities.Client project.
 - Add private helper methods.
 - Add code to retrieve and update entities.
+    + Retrieve customers
+    + Retrieve customer orders
+    + Create an order with details
+    + Update an existing order with unchanged, added, modified and deleted details
+    + Delete an order and verify that it was deleted
 
+> **Note**: Complete code for the client app can be found in the ConsoleClient project of the provided solution.
