@@ -198,30 +198,6 @@ Sample solution using Trackable Entities with .NET Core.
 
     + Navigate to api/order/ALFKI.
 
-- Add helper methods to load related entities and accept changes.
-
-    ```csharp
-    private async Task LoadRelatedAsync(Order order)
-    {
-        await _context.Entry(order).Reference(m => m.Customer).LoadAsync();
-        foreach (var detail in order.OrderDetails)
-        {
-            await _context.Entry(detail).Reference(m => m.Product).LoadAsync();
-        }
-    }
-
-    private static void AcceptChanges(Order order)
-    {
-        order.TrackingState = TrackingState.Unchanged;
-        order.Customer.TrackingState = TrackingState.Unchanged;
-        order.OrderDetails.ToList().ForEach(m =>
-        {
-            m.TrackingState = TrackingState.Unchanged;
-            m.Product.TrackingState = TrackingState.Unchanged;
-        });
-    }
-    ```
-
 - Refactor Put, Post and Delete actions to call `_context.ApplyChanges`.
 
     + Refactor `PutOrder` to replace setting state to Modified with applying changes nad return the order with an OK response.
@@ -229,6 +205,12 @@ Sample solution using Trackable Entities with .NET Core.
     ```csharp
     //_context.Entry(order).State = EntityState.Modified;
     _context.ApplyChanges(order);
+
+    // Populate reference properties
+    await _context.LoadRelatedEntitiesAsync(order);
+
+    // Reset tracking state to unchanged
+    _context.AcceptChanges(order);
 
     //return NoContent();
     return Ok(order);
@@ -238,30 +220,48 @@ Sample solution using Trackable Entities with .NET Core.
     + Remove the `id` parameter from `PostOrder`.
 
     ```csharp
-    //_context.Orders.Add(order);
+    // Set state to added
     order.TrackingState = TrackingState.Added;
+
+    // Apply changes to context
     _context.ApplyChanges(order);
+
+    // Persist changes
+    await _context.SaveChangesAsync();
+
+    // Populate reference properties
+    await _context.LoadRelatedEntitiesAsync(order);
+
+    // Reset tracking state to unchanged
+    _context.AcceptChanges(order);
     ```
 
     + Refactor `DeleteOrder` to set TrackingState to Deleted and apply changes,
       and return Ok without an entity.
 
     ```csharp
-    //_context.Orders.Remove(order);
+    // Retrieve order with details
+    var order = await _context.Orders
+        .Include(m => m.OrderDetails)
+        .SingleOrDefaultAsync(m => m.OrderId == id);
+    if (order == null)
+    {
+        return NotFound();
+    }
+
+    // Set tracking state to deleted
     order.TrackingState = TrackingState.Deleted;
+
+    // Detach object graph
+    _context.DetachEntities(order);
+
+    // Apply changes to context
     _context.ApplyChanges(order);
 
+    // Persist changes
+    await _context.SaveChangesAsync();
+
     return Ok();
-    ```
-
-- Call helper methods in `PutOrder` and `PostOrder` methods - just before return statement.
-
-    ```chsarp
-    // Populate reference properties
-    await LoadRelatedAsync(order);
-
-    // Reset tracking state to unchanged
-    AcceptChanges(order);
     ```
 
 ## Console Client

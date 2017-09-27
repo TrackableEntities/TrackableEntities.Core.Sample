@@ -76,11 +76,12 @@ namespace NetCoreSample.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            //_context.Entry(order).State = EntityState.Modified;
+            // Apply changes to context
             _context.ApplyChanges(order);
 
             try
             {
+                // Persist changes
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -93,10 +94,10 @@ namespace NetCoreSample.Web.Controllers
             }
 
             // Populate reference properties
-            _context.LoadRelatedEntities(order);
+            await _context.LoadRelatedEntitiesAsync(order);
 
             // Reset tracking state to unchanged
-            AcceptChanges(order);
+            _context.AcceptChanges(order);
 
             //return NoContent();
             return Ok(order);
@@ -111,17 +112,20 @@ namespace NetCoreSample.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            //_context.Orders.Add(order);
+            // Set state to added
             order.TrackingState = TrackingState.Added;
+
+            // Apply changes to context
             _context.ApplyChanges(order);
 
+            // Persist changes
             await _context.SaveChangesAsync();
 
             // Populate reference properties
-            _context.LoadRelatedEntities(order);
+            await _context.LoadRelatedEntitiesAsync(order);
 
             // Reset tracking state to unchanged
-            AcceptChanges(order);
+            _context.AcceptChanges(order);
 
             return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
         }
@@ -135,30 +139,28 @@ namespace NetCoreSample.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            var order = await _context.Orders.SingleOrDefaultAsync(m => m.OrderId == id);
+            // Retrieve order with details
+            var order = await _context.Orders
+                .Include(m => m.OrderDetails)
+                .SingleOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
                 return NotFound();
             }
 
-            //_context.Orders.Remove(order);
+            // Set tracking state to deleted
             order.TrackingState = TrackingState.Deleted;
+
+            // Detach object graph
+            _context.DetachEntities(order);
+
+            // Apply changes to context
             _context.ApplyChanges(order);
 
+            // Persist changes
             await _context.SaveChangesAsync();
 
             return Ok();
-        }
-
-        private static void AcceptChanges(Order order)
-        {
-            order.TrackingState = TrackingState.Unchanged;
-            order.Customer.TrackingState = TrackingState.Unchanged;
-            order.OrderDetails.ToList().ForEach(m =>
-            {
-                m.TrackingState = TrackingState.Unchanged;
-                m.Product.TrackingState = TrackingState.Unchanged;
-            });
         }
     }
 }
