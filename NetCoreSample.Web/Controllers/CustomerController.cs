@@ -28,11 +28,6 @@ namespace NetCoreSample.Web.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer([FromRoute] string id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var customer = await _context.Customers.SingleOrDefaultAsync(m => m.CustomerId == id);
 
             if (customer == null)

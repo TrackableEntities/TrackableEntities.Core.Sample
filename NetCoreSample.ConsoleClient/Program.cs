@@ -78,11 +78,14 @@ namespace NetCoreSample.ConsoleClient
             PrintOrderWithDetails(createdOrder);
 
             // Update the order
-            Console.WriteLine("\nPress Enter to update order details");
+            Console.WriteLine("\nPress Enter to update order and details");
             Console.ReadLine();
 
             // Start change-tracking the order
             var changeTracker = new ChangeTrackingCollection<Order>(createdOrder);
+
+            // Modify order
+            createdOrder.OrderDate = createdOrder.OrderDate.GetValueOrDefault().AddDays(1);
 
             // Modify order details
             createdOrder.OrderDetails[0].UnitPrice++;

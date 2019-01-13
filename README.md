@@ -68,12 +68,6 @@ _In this section you will create a new database based on entities generated from
     + Microsoft.EntityFrameworkCore.Tools
 - Add a reference from the Web project to the Entities project.
     + Then build the solution.
-- Edit the Web csproj file to add the following to the last ItemGroup
-
-    ```xml
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
-    ```
-
 - Add an App_Data directory to the Web project.
 - Update appsettings.json to add a connection string to a local database file
 
