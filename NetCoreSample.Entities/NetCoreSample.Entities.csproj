@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TrackableEntities.Common.Core" Version="1.0.0-alpha" />
+    <PackageReference Include="TrackableEntities.Common.Core" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
