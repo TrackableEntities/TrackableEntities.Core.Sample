@@ -143,7 +143,7 @@ namespace NetCoreSample.ConsoleClient
         private static IEnumerable<Order> GetCustomerOrders
             (HttpClient client, string customerId, MediaTypeFormatter formatter)
         {
-            string request = "api/Order?customerId=" + customerId;
+            string request = $"api/Order/{customerId}";
             var response = client.GetAsync(request).Result;
             response.EnsureSuccessStatusCode();
             var result = response.Content.ReadAsAsync<IEnumerable<Order>>(new[] { formatter }).Result;
