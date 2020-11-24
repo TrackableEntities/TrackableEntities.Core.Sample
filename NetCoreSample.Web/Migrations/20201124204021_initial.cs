@@ -11,9 +11,9 @@ namespace NetCoreSample.Web.Migrations
                 name: "Category",
                 columns: table => new
                 {
-                    CategoryId = table.Column<int>(nullable: false)
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CategoryName = table.Column<string>(maxLength: 15, nullable: false)
+                    CategoryName = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -24,11 +24,11 @@ namespace NetCoreSample.Web.Migrations
                 name: "Customer",
                 columns: table => new
                 {
-                    CustomerId = table.Column<string>(maxLength: 5, nullable: false),
-                    CompanyName = table.Column<string>(maxLength: 40, nullable: false),
-                    ContactName = table.Column<string>(maxLength: 30, nullable: true),
-                    City = table.Column<string>(maxLength: 15, nullable: true),
-                    Country = table.Column<string>(maxLength: 15, nullable: true)
+                    CustomerId = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
+                    CompanyName = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    ContactName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    City = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,12 +39,12 @@ namespace NetCoreSample.Web.Migrations
                 name: "Product",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductName = table.Column<string>(maxLength: 40, nullable: false),
-                    CategoryId = table.Column<int>(nullable: true),
+                    ProductName = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
                     UnitPrice = table.Column<decimal>(type: "money", nullable: true),
-                    Discontinued = table.Column<bool>(nullable: false),
+                    Discontinued = table.Column<bool>(type: "bit", nullable: false),
                     RowVersion = table.Column<byte[]>(type: "timestamp", maxLength: 8, nullable: true)
                 },
                 constraints: table =>
@@ -62,8 +62,8 @@ namespace NetCoreSample.Web.Migrations
                 name: "CustomerSetting",
                 columns: table => new
                 {
-                    CustomerId = table.Column<string>(maxLength: 5, nullable: false),
-                    Setting = table.Column<string>(maxLength: 50, nullable: false)
+                    CustomerId = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
+                    Setting = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,12 +80,12 @@ namespace NetCoreSample.Web.Migrations
                 name: "Order",
                 columns: table => new
                 {
-                    OrderId = table.Column<int>(nullable: false)
+                    OrderId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerId = table.Column<string>(maxLength: 5, nullable: true),
-                    OrderDate = table.Column<DateTime>(nullable: true),
-                    ShippedDate = table.Column<DateTime>(nullable: true),
-                    ShipVia = table.Column<int>(nullable: true),
+                    CustomerId = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: true),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ShippedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ShipVia = table.Column<int>(type: "int", nullable: true),
                     Freight = table.Column<decimal>(type: "money", nullable: true)
                 },
                 constraints: table =>
@@ -103,13 +103,13 @@ namespace NetCoreSample.Web.Migrations
                 name: "OrderDetail",
                 columns: table => new
                 {
-                    OrderDetailId = table.Column<int>(nullable: false)
+                    OrderDetailId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderId = table.Column<int>(nullable: false),
-                    ProductId = table.Column<int>(nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "money", nullable: false),
-                    Quantity = table.Column<short>(nullable: false),
-                    Discount = table.Column<float>(nullable: false)
+                    Quantity = table.Column<short>(type: "smallint", nullable: false),
+                    Discount = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {

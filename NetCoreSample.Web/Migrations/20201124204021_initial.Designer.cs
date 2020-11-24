@@ -10,28 +10,28 @@ using NetCoreSample.Web;
 namespace NetCoreSample.Web.Migrations
 {
     [DbContext(typeof(NorthwindSlimContext))]
-    [Migration("20201124175218_initial")]
+    [Migration("20201124204021_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.10")
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("NetCoreSample.Entities.Category", b =>
                 {
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(15)")
-                        .HasMaxLength(15);
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.HasKey("CategoryId");
 
@@ -41,25 +41,25 @@ namespace NetCoreSample.Web.Migrations
             modelBuilder.Entity("NetCoreSample.Entities.Customer", b =>
                 {
                     b.Property<string>("CustomerId")
-                        .HasColumnType("nvarchar(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<string>("City")
-                        .HasColumnType("nvarchar(15)")
-                        .HasMaxLength(15);
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("ContactName")
-                        .HasColumnType("nvarchar(30)")
-                        .HasMaxLength(30);
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Country")
-                        .HasColumnType("nvarchar(15)")
-                        .HasMaxLength(15);
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.HasKey("CustomerId");
 
@@ -69,13 +69,13 @@ namespace NetCoreSample.Web.Migrations
             modelBuilder.Entity("NetCoreSample.Entities.CustomerSetting", b =>
                 {
                     b.Property<string>("CustomerId")
-                        .HasColumnType("nvarchar(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<string>("Setting")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CustomerId");
 
@@ -87,11 +87,11 @@ namespace NetCoreSample.Web.Migrations
                     b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("CustomerId")
-                        .HasColumnType("nvarchar(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<decimal?>("Freight")
                         .HasColumnType("money");
@@ -117,7 +117,7 @@ namespace NetCoreSample.Web.Migrations
                     b.Property<int>("OrderDetailId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<float>("Discount")
                         .HasColumnType("real");
@@ -148,7 +148,7 @@ namespace NetCoreSample.Web.Migrations
                     b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
@@ -158,13 +158,13 @@ namespace NetCoreSample.Web.Migrations
 
                     b.Property<string>("ProductName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<byte[]>("RowVersion")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp")
-                        .HasMaxLength(8);
+                        .HasMaxLength(8)
+                        .HasColumnType("timestamp");
 
                     b.Property<decimal?>("UnitPrice")
                         .HasColumnType("money");
@@ -183,6 +183,8 @@ namespace NetCoreSample.Web.Migrations
                         .HasForeignKey("NetCoreSample.Entities.CustomerSetting", "CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("NetCoreSample.Entities.Order", b =>
@@ -190,6 +192,8 @@ namespace NetCoreSample.Web.Migrations
                     b.HasOne("NetCoreSample.Entities.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("NetCoreSample.Entities.OrderDetail", b =>
@@ -205,6 +209,10 @@ namespace NetCoreSample.Web.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("NetCoreSample.Entities.Product", b =>
@@ -212,6 +220,30 @@ namespace NetCoreSample.Web.Migrations
                     b.HasOne("NetCoreSample.Entities.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("NetCoreSample.Entities.Category", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("NetCoreSample.Entities.Customer", b =>
+                {
+                    b.Navigation("CustomerSetting");
+
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("NetCoreSample.Entities.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("NetCoreSample.Entities.Product", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

@@ -110,7 +110,7 @@ _In this section you will create a new database based on entities generated from
 
 - Install global EF Core CLI tool.
     ```
-    dotnet tool install --global dotnet-ef --version 3.1.10
+    dotnet tool install --global dotnet-ef
     ```
 - Add an initial migration.
     + Open command prompt at Web project to add an initial migration.
