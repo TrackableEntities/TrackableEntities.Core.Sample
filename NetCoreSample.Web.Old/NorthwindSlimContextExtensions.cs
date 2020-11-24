@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using NetCoreSample.Entities;
 
@@ -15,18 +16,18 @@ namespace NetCoreSample.Web
             {
                 if (!context.Categories.Any())
                 {
-                    context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.[Category] ON");
+                    context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.[Category] ON");
                     AddCategories(context);
                     context.SaveChanges();
-                    context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.[Category] OFF");
+                    context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.[Category] OFF");
                 }
 
                 if (!context.Products.Any())
                 {
-                    context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.[Product] ON");
+                    context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.[Product] ON");
                     AddProducts(context);
                     context.SaveChanges();
-                    context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.[Product] OFF");
+                    context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.[Product] OFF");
                 }
 
                 if (!context.Customers.Any())
@@ -37,10 +38,10 @@ namespace NetCoreSample.Web
 
                 if (!context.Orders.Any())
                 {
-                    context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.[Order] ON");
+                    context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.[Order] ON");
                     AddOrders(context);
                     context.SaveChanges();
-                    context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.[Order] OFF");
+                    context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.[Order] OFF");
                 }
             }
             finally
