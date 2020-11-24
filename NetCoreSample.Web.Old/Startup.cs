@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 
 namespace NetCoreSample.Web
@@ -20,15 +19,15 @@ namespace NetCoreSample.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers()
-                .AddNewtonsoftJson(options =>
+            services.AddMvc()
+                .AddJsonOptions(options =>
                     options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All);
             var connectionString = Configuration.GetConnectionString("NetCoreSample");
             services.AddDbContext<NorthwindSlimContext>(options => options.UseSqlServer(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, NorthwindSlimContext context)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, NorthwindSlimContext context)
         {
             if (env.IsDevelopment())
             {
@@ -36,14 +35,7 @@ namespace NetCoreSample.Web
                 context.EnsureSeedData();
             }
 
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseMvc();
         }
     }
 }

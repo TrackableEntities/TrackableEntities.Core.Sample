@@ -18,7 +18,7 @@ Sample solution using Trackable Entities with ASP.NET Core and Entity Framework 
 
 _This sample shows how you can **both** generate entities from an existing database (database-first) and create a new database from existing entities (code-first). In real life you would do either one or the other._
 
-- This sample uses a skinny version of the Northwind sample database, called _NorthwindSlim_, which you can download from http://bit.ly/northwindslim.
+- This sample uses a skinny version of the Northwind sample database, called _NorthwindSlim_, which you can download from https://github.com/TrackableEntities/northwind-slim.
 - Open SQL Server Management Studio, connect to (localdb)\MsSqlLocalDb and create a new database named _NorthwindSlim_. Then run the NorthwindSlim.sql file, which will create all the database tables and populate them with data.
 
 ## Server-Side Generated Trackable Entities
@@ -27,12 +27,12 @@ _Entities are generated with a traditional .NET class library so that you can us
 
 > **Note**: If you haven't done so already, create a Visual Studio solution either prior to or while adding a class library project.
 
-- Add a .NET 4.6.1 Class Library project called _NetCoreSample.Entities.Generated_.
+- Add a .NET 4.8 Class Library project called _NetCoreSample.Entities.Generated_.
     + Open project prpoperties and remove ".Generated" from the default namespace.
 - Add a **Data Connection** in Visual Studio pointing to the NorthwindSlim database on (localdb)\MsSqlLocalDb.
 - Install NuGet packages:
     + EntityFramework
-    + Install TrackableEntities.Common.Core -Pre
+    + Install TrackableEntities.Common.Core
     + TrackableEntities.CodeTemplates.Service.Net45
     > **Note**: Ignore the compiling transformation error.
 - Edit EntityType.cs.t4 file in the CodeTemplates/EFModelFromDatabase folder.
@@ -46,7 +46,7 @@ _Entities are generated with a traditional .NET class library so that you can us
 
 ## Trackable Entities NetStandard Library
 - Add a NetStandard class library called _NetCoreSample.Entities_
-    + Install NuGet package: TrackableEntities.Common.Core -Pre
+    + Install NuGet package: TrackableEntities.Common.Core
 - Add a reference to **System.ComponentModel.DataAnnotations**.
 - **Link** generated entities from the NetCoreSample.Entities.Generated project.
     + Right-click _NetCoreSample.Entities_ project, select Add New Item
@@ -61,11 +61,11 @@ _In this section you will create a new database based on entities generated from
 > **Note**: To perform an EF Core migration you need to first create either an ASP.NET Core app or a .NET Core console app.  It is not possible to use a class library for EF Core migrations.
 
 - Add a new **ASP.NET Core** web application
-    + Select Web API template targeting .NET Core with ASP.NET Core 2.0.
+    + Select Web API template targeting .NET Core with ASP.NET Core 3.1.
 - Install NuGet packages:
     + Microsoft.EntityFrameworkCore.SqlServer
-    + TrackableEntities.EF.Core -Pre
-    + Microsoft.EntityFrameworkCore.Tools
+    + TrackableEntities.EF.Core
+    + Microsoft.EntityFrameworkCore.Design
 - Add a reference from the Web project to the Entities project.
     + Then build the solution.
 - Add an App_Data directory to the Web project.
@@ -73,7 +73,7 @@ _In this section you will create a new database based on entities generated from
 
     ```json
     "ConnectionStrings": {
-    "NetCoreSample": "Data Source=(localdb)\\MSSQLLocalDB;initial catalog=NetCoreSample;Integrated Security=True; MultipleActiveResultSets=True"
+        "NetCoreSample": "Data Source=(localdb)\\MSSQLLocalDB;initial catalog=NetCoreSample;Integrated Security=True; MultipleActiveResultSets=True"
     }
     ```
 
@@ -108,11 +108,15 @@ _In this section you will create a new database based on entities generated from
     }
     ```
 
+- Install global EF Core CLI tool.
+    ```
+    dotnet tool install --global dotnet-ef --version 3.1.10
+    ```
 - Add an initial migration.
     + Open command prompt at Web project to add an initial migration.
 
     ```
-    dotnet ef migrations add Initial
+    dotnet ef migrations add initial
     ```
 
 - Use the ef tools to create the database.
@@ -136,8 +140,8 @@ _This sample uses the .NET Core CLI for scaffolding Web API contollers with GET,
 - Update `Startup.ConfigureServices` to handle cyclical references when serializing JSON.
 
     ```csharp
-    services.AddMvc()
-        .AddJsonOptions(options =>
+    services.AddControllers()
+        .AddNewtonsoftJson(options =>
             options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All);
     ```
 
@@ -298,7 +302,7 @@ _Client-side entities are generated using the Visual Studio wizard for adding an
 
 _The client console app uses traditional Trackable Entities NuGet packages, which perform client-side change tracking for marking entities as Added, Modified or Deleted._
 
-- Add a .NET 4.6.1 console app called _NetCoreSample.ConsoleClient_.
+- Add a .NET 4.8 console app called _NetCoreSample.ConsoleClient_.
 - Install NuGet packages:
     + TrackableEntities.Client
     + Microsoft.AspNet.WebApi.Client
